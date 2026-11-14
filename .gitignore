@@ -1,0 +1,38 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente (mantém o exemplo versionado)
+.env
+.env.*
+!.env.example
+
+# Banco de dados SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sessões do WhatsApp (caso use whatsapp-web.js / baileys)
+.wwebjs_auth/
+.wwebjs_cache/
+auth_info*/
+
+# Build / cobertura
+dist/
+build/
+coverage/
+
+# Sistema operacional / editores
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
