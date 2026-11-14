@@ -943,6 +943,9 @@ export function closeDatabase() {
   return pool.end();
 }
 
+// Na Vercel o arquivo é importado como função (sem app.listen): ela usa este export padrão.
+export default app;
+
 const isMainModule = process.argv[1] &&
   pathToFileURL(resolve(process.argv[1])).href === import.meta.url;
 
