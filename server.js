@@ -551,21 +551,17 @@ async function saveTimeOffIfFree(timeOff, existing = null) {
   }
 }
 
-async function listAppointments() {
+// from e to são opcionais e inclusivos ('YYYY-MM-DD'); sem eles, lista tudo.
+async function listAppointments({ from, to } = {}) {
   const { rows } = await pool.query(
-    `SELECT id, name, phone, barber, service, date, to_char(hour, 'HH24:MI') AS hour
+    `SELECT ${appointmentColumns}
      FROM appointments
-     ORDER BY date ASC, hour ASC, id ASC`
+     WHERE ($1::date IS NULL OR date >= $1::date)
+       AND ($2::date IS NULL OR date <= $2::date)
+     ORDER BY date ASC, hour ASC, id ASC`,
+    [from || null, to || null]
   );
-  return rows.map((row) => ({
-    id: String(row.id),
-    nome: row.name,
-    telefone: row.phone,
-    barbeiro: row.barber,
-    servico: row.service,
-    data: row.date,
-    hora: row.hour
-  }));
+  return rows.map(toAppointment);
 }
 
 app.get('/api/servicos', async (request, response, next) => {
@@ -673,9 +669,23 @@ app.post('/api/agendar', appointmentLimiter, async (request, response, next) => 
 });
 
 app.get('/api/agendamentos', async (request, response, next) => {
+  const { de, ate } = request.query;
+
+  for (const [field, value] of [['de', de], ['ate', ate]]) {
+    if (value !== undefined && (typeof value !== 'string' || !isValidDate(value))) {
+      response.status(400).json({ error: `O parâmetro "${field}" deve usar o formato YYYY-MM-DD.` });
+      return;
+    }
+  }
+
+  if (de && ate && ate < de) {
+    response.status(400).json({ error: 'O parâmetro "ate" deve ser igual ou posterior a "de".' });
+    return;
+  }
+
   try {
     await databaseReady;
-    response.json(await listAppointments());
+    response.json(await listAppointments({ from: de, to: ate }));
   } catch (error) {
     next(error);
   }

@@ -188,7 +188,7 @@ Todas as respostas são JSON. Erros vêm como `{ "error": "mensagem" }`, em port
 
 ### 7.2 Gestão de agendamentos
 
-- **`GET /api/agendamentos`**: lista todos, ordenados por data e hora. **Retorna nomes e telefones.**
+- **`GET /api/agendamentos`**: lista os agendamentos, ordenados por data e hora. Filtros opcionais `?de=YYYY-MM-DD&ate=YYYY-MM-DD` (inclusivos); sem eles, lista todos. **Retorna nomes e telefones.**
 - **`PATCH /api/agendamentos/:id`**: altera um agendamento. Envie só os campos que mudam (`nome`, `telefone`, `servico` (id), `barbeiro`, `data`, `hora`). Se serviço, barbeiro, data ou hora mudarem, a disponibilidade é conferida de novo, ignorando o próprio agendamento. Retorna `200`, `400`, `404` ou `409`.
 - **`DELETE /api/agendamentos/:id`**: remove o agendamento (`204`) e libera o horário. `404` se não existir.
 
